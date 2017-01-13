@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/shahashil2/Node_WS_API#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0"
   }
 }
