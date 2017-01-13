@@ -1,0 +1,25 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "first web service app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shahashil2/Node_WS_API.git"
+  },
+  "keywords": [
+    "nodejsAshilDipak"
+  ],
+  "author": "Ashil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shahashil2/Node_WS_API/issues"
+  },
+  "homepage": "https://github.com/shahashil2/Node_WS_API#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
