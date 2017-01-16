@@ -22,6 +22,12 @@ app.get('/demoGet', function (req, res) {
 
 
 app.post('/demoPost', function (req, res) {
+if (!req.headers) {
+    console.log('No headers added');
+  } else {
+    console.log('HEADERS are ');
+    console.log(req.headers);
+  }
   res.send(req.body);
 });
 
