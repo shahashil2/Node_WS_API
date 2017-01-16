@@ -8,9 +8,8 @@ var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
   name:String,
-  email:{type:String,required:true,unique:true},
+  email:{type:String,required:true},
   password:{type:String,required:true},
-  age:Number,
   created_at:Date
 });
 
