@@ -37,7 +37,7 @@ app.post('/demoPost', function (req, res) {
       var email = req.body.email;
       var password = req.body.password;
 
-      // create a new user called chris
+      // create a new user called
         var newuser = new User({
           name: name,
           email: email,
