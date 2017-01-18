@@ -5,6 +5,7 @@ const User = require('../models/user'); //load user module
 const message = require('../utils/responseAlerts'); //get alertMessages file
 const validator     = require('validator');
 const passwordHash = require('password-hash');
+const httpCodes = require('../utils/httpCodes')
 //-----------------------------------------
     //POST : /user/login
     //User Login
@@ -16,24 +17,24 @@ exports.login = function(req,res){
 
     //validation for email and password
     if(!validator.isEmail(email) || validator.isEmpty(email)){
-         res.status(400).json({success:false,message:message.invalidEmail})
+         res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest})
     }else if(validator.isEmpty(password)){
-        res.status(400).json({success:false,message:message.emptyPass})
+        res.status(httpCodes.badRequest).json({message:message.emptyPass,status:httpCodes.badRequest})
     }
-
-    User.find({email : email},function(err,users){
-        if(err) res.json({success:false,message:message.loginFail});
-        if (users.length > 0){
-              if (bcrypt.compareSync(password, users[0].password)) {
-                var token = jwt.sign({id:users[0].id},config.secret);
-                res.json({ success: true, message: message.successLogin, user: users[0],secret_token:token});
-            } else {
-                res.status(400).json({ success: false, message: message.errorLogin});
-            }
-        }else{
-            res.status(400).json({success:false,message:message.userNotFound});
-        }
-    });
+    else {
+               User.find({email : email},function(err,users){
+                    if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
+                    if (users.length > 0){
+                        if (passwordHash.verify(password, users[0].password)) {
+                            res.json({message: message.successLogin,accessToken:req.accessToken,status:httpCodes.ok});
+                        } else {
+                            res.status(httpCodes.badRequest).json({ message: message.errorLogin,status:httpCodes.badRequest});
+                        }
+                    }else{
+                        res.status(httpCodes.badRequest).json({message:message.userNotFound,status:httpCodes.badRequest});
+                    }
+                });
+    }
 };
 
 
@@ -50,22 +51,20 @@ exports.userRegister = function(req,res){
 
    var hashedPassword = passwordHash.generate(password);
 
-   console.log(req.accessToken);
-
    //validate fields
     if(!validator.isEmail(email) || validator.isEmpty(email)){
-        res.status(400).json({success:false,message:message.invalidEmail});
+        res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest});
     }else if(validator.isEmpty(password)){
-        res.status(400).json({success:false,message:message.emptyPass});
+        res.status(httpCodes.badRequest).json({message:message.emptyPass,status:httpCodes.badRequest});
     }else if(validator.isEmpty(name)){
-         res.status(400).json({success:false,message:message.emptyName});
+         res.status(httpCodes.badRequest).json({message:message.emptyName,status:httpCodes.badRequest});
     }
     else {
         User.find({email:email},function(err,users){
-                if(err) res.json({success:false,message:message.networkErr});
+                if(err) res.json({message:message.networkErr,status:httpCodes.badRequest});
 
                 if(users.length > 0){
-                    res.json({success:false,messgae:message.alreadyRegisterUser});
+                    res.json({messgae:message.alreadyRegisterUser,status:httpCodes.badRequest});
                 }else{
                     var userData = new User({
                     name : name,
@@ -75,9 +74,9 @@ exports.userRegister = function(req,res){
                 
                 //save data into database
                 userData.save(function(err,userValue){
-                    if(err) res.json({success:false,message:message.registrationFailed}); 
+                    if(err) res.json({message:message.registrationFailed,status:httpCodes.badRequest}); 
                     console.log(userValue)
-                    res.status(200).json({success:true,message:message.successRegister,accessToken:req.accessToken});
+                    res.status(httpCodes.ok).json({message:message.successRegister,accessToken:req.accessToken,status:httpCodes.created});
                 });
                 }     
         });
@@ -98,14 +97,20 @@ exports.users = function(req,res){
       _id:false
     };
     User.find({},userExclusion,function(err,users){
-          var data = [];
 
-          if (!users.length) return res.send({sucess:false,message:message.noUsersFound});
+          if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
 
-          res.send({
-            message:message.successUserList,
-            data:users,
-          });
+        if(users.length > 0){
+             res.status(httpCodes.ok).json({
+                       message:message.successUserList,
+                       data:users,status:httpCodes.ok
+             });
+         }
+        else {
+            return res.status(httpCodes.noContent).send({message:message.noUsersFound,status:httpCodes.ok});
+        } 
+
+           
     });
 };
 
@@ -118,11 +123,11 @@ exports.forgotPassword = function(req,res){
     var email = req.body.email;
 
      if(!validator.isEmail(email) || validator.isEmpty(email)){
-        res.status(400).json({success:false,message:message.invalidEmail});
+        res.status(400).json({message:message.invalidEmail,status:httpCodes.badRequest});
      }
 
       User.find({email:email},function(err,users){
-        if(err) res.json({success:false,message:message.networkErr});
+        if(err) res.json({message:message.networkErr,status:httpCodes.networkConnectTimeout});
         var user = users[0];
         if(users.length > 0){
             var config = {
@@ -130,8 +135,8 @@ exports.forgotPassword = function(req,res){
                 port: 465,
                 secure: true, // use SSL 
                 auth: {
-                    user: 'krupa.patel.sa@gmail.com',
-                    pass: 'krupa@123'
+                    user: 'dipak.singh.sa@gmail.com',
+                    pass: 'dipak@sa1'
                 }
             };
 
@@ -140,7 +145,7 @@ exports.forgotPassword = function(req,res){
 
             // setup e-mail data
             var mailOptions = {
-                from: '"EMS System" <krupa.patel.sa@gmail.com>',
+                from: '"EMS System" <dipak.singh.sa@gmail.com>',
                 to: user.email,
                 subject: 'Forgot password request',
                 text: 'Hello ' + user.fullName + ', your passsword is, \n password ==> ' + user.password
@@ -151,7 +156,7 @@ exports.forgotPassword = function(req,res){
                 if (error) {
                     return console.log(error);
                 }
-                res.json({ success: true, message: message.successForgotPass});
+                res.json({message: message.successForgotPass,accessToken:req.accessToken,status:httpCodes.ok});
             });
         }       
    });
