@@ -70,11 +70,12 @@ exports.userRegister = function(req,res){
                     email : email,
                     password : hashedPassword,
                 });
+                
                 //save data into database
                 userData.save(function(err,userValue){
                     if(err) res.json({success:false,message:message.registrationFailed}); 
                     console.log(userValue)
-                    res.status(200).json({success:true,message:message.successRegister});
+                    res.status(200).json({success:true,message:message.successRegister,accessToken:req.accessToken});
                 });
                 }     
         });

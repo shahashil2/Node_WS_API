@@ -7,11 +7,10 @@ const auth = require('../utils/authorization')
     //User API
 //---------------------------------------------------
 console.log(userCtrl);
-router.use(auth.checkAuth)
-router.route('/users').get(userCtrl.users);
-router.route('/user/login').post(userCtrl.login);
-router.route('/user/signUp').post(userCtrl.userRegister);
-router.route('/user/forgotPassword').post(userCtrl.forgotPassword);
+router.route('/users').get(auth.checkAuth,userCtrl.users);
+router.route('/user/login').post(auth.generataToken,userCtrl.login);
+router.route('/user/signUp').post(auth.generataToken,userCtrl.userRegister);
+router.route('/user/forgotPassword').post(auth.generataToken,userCtrl.forgotPassword);
 
 
 module.exports = router;

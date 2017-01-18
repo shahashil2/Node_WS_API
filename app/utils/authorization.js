@@ -21,3 +21,10 @@ exports.checkAuth = function(req,res,next){
         res.status(403).json({success:false,message:'No token provided'}); //403:Forbidden and user is not authorize to view any data
     }
 }
+
+exports.generataToken = function(req,res,next){
+        const jwtToken = jwt.sign('user', config.secret, {
+                // expiresInMinutes: 1440 // expires in 24 hours
+        });
+        req.accessToken = jwtToken;
+}
