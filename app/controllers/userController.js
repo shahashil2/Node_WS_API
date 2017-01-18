@@ -50,6 +50,8 @@ exports.userRegister = function(req,res){
 
    var hashedPassword = passwordHash.generate(password);
 
+   console.log(req.accessToken);
+
    //validate fields
     if(!validator.isEmail(email) || validator.isEmpty(email)){
         res.status(400).json({success:false,message:message.invalidEmail});

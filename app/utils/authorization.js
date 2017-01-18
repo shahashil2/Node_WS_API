@@ -24,7 +24,10 @@ exports.checkAuth = function(req,res,next){
 
 exports.generataToken = function(req,res,next){
         const jwtToken = jwt.sign('user', config.secret, {
-                // expiresInMinutes: 1440 // expires in 24 hours
+                // expiresIn: 1440// expires in 24 hours
         });
+
+        console.log(jwtToken);
         req.accessToken = jwtToken;
+        next();
 }
