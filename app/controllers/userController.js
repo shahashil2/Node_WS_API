@@ -6,6 +6,8 @@ const message = require('../utils/responseAlerts'); //get alertMessages file
 const validator     = require('validator');
 const passwordHash = require('password-hash');
 const httpCodes = require('../utils/httpCodes')
+const url       = require('url')
+
 //-----------------------------------------
     //POST : /user/login
     //User Login
@@ -85,6 +87,46 @@ exports.userRegister = function(req,res){
 };
 
 //-----------------------------------------
+    //GET : /user/detail
+    //GET users detail
+//-----------------------------------------
+exports.userDetails = function(req,res){
+        
+        var email = '';
+
+        var urlquery = url.parse(req.url, ['email']);
+       
+        if(urlquery.query.email){
+            var emailString = String(urlquery.query.email)
+            emailString = emailString.replace(/\s+/g, '');
+            if(validator.isEmail(emailString)){
+                email = emailString;
+            }
+
+        }
+        var queryParts = [];
+
+        if(urlquery.query.fields){
+            var field = String(urlquery.query.fields) ;
+            queryParts = field.split(',')
+        }
+
+        User.find({email:email},queryParts.join(' '),function(err,users){
+                if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
+
+                if(users.length > 0){
+                    res.status(httpCodes.ok).json({
+                            message:message.successUserList,
+                            data:users,status:httpCodes.ok
+                    });
+                }
+                else {
+                    return res.status(httpCodes.noContent).send({message:message.noUsersFound,status:httpCodes.ok});
+                } 
+        });
+} 
+
+//-----------------------------------------
     //GET : /users
     //GET all users list
 //-----------------------------------------
@@ -123,7 +165,7 @@ exports.forgotPassword = function(req,res){
     var email = req.body.email;
 
      if(!validator.isEmail(email) || validator.isEmpty(email)){
-        res.status(400).json({message:message.invalidEmail,status:httpCodes.badRequest});
+        res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest});
      }
 
       User.find({email:email},function(err,users){
