@@ -19,21 +19,21 @@ exports.login = function(req,res){
 
     //validation for email and password
     if(!validator.isEmail(email) || validator.isEmpty(email)){
-         res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest})
+         res.status(httpCodes.badRequest).json({success:false,message:message.invalidEmail})
     }else if(validator.isEmpty(password)){
-        res.status(httpCodes.badRequest).json({message:message.emptyPass,status:httpCodes.badRequest})
+        res.status(httpCodes.badRequest).json({success:false,message:message.emptyPass})
     }
     else {
                User.find({email : email},function(err,users){
-                    if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
+                    if(err) res.status(httpCodes.badRequest).json({success:false,message:message.loginFail});
                     if (users.length > 0){
                         if (passwordHash.verify(password, users[0].password)) {
-                            res.json({message: message.successLogin,accessToken:req.accessToken,status:httpCodes.ok});
+                            res.status(httpCodes.ok).json({success:true,message: message.successLogin,accessToken:req.accessToken});
                         } else {
-                            res.status(httpCodes.badRequest).json({ message: message.errorLogin,status:httpCodes.badRequest});
+                            res.status(httpCodes.badRequest).json({success:false, message: message.errorLogin});
                         }
                     }else{
-                        res.status(httpCodes.badRequest).json({message:message.userNotFound,status:httpCodes.badRequest});
+                        res.status(httpCodes.badRequest).json({success:false,message:message.userNotFound});
                     }
                 });
     }
@@ -55,18 +55,18 @@ exports.userRegister = function(req,res){
 
    //validate fields
     if(!validator.isEmail(email) || validator.isEmpty(email)){
-        res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest});
+        res.status(httpCodes.badRequest).json({success:false,message:message.invalidEmail});
     }else if(validator.isEmpty(password)){
-        res.status(httpCodes.badRequest).json({message:message.emptyPass,status:httpCodes.badRequest});
+        res.status(httpCodes.badRequest).json({success:false,message:message.emptyPass});
     }else if(validator.isEmpty(name)){
-         res.status(httpCodes.badRequest).json({message:message.emptyName,status:httpCodes.badRequest});
+         res.status(httpCodes.badRequest).json({success:false,message:message.emptyName});
     }
     else {
         User.find({email:email},function(err,users){
-                if(err) res.json({message:message.networkErr,status:httpCodes.badRequest});
+                if(err) res.status(httpCodes.badRequest).json({success:false,message:message.networkErr});
 
                 if(users.length > 0){
-                    res.json({messgae:message.alreadyRegisterUser,status:httpCodes.badRequest});
+                    res.status(badRequest).json({success:false,messgae:message.alreadyRegisterUser});
                 }else{
                     var userData = new User({
                     name : name,
@@ -76,9 +76,9 @@ exports.userRegister = function(req,res){
                 
                 //save data into database
                 userData.save(function(err,userValue){
-                    if(err) res.json({message:message.registrationFailed,status:httpCodes.badRequest}); 
+                    if(err) res,status(httpCodes.badRequest).json({success:false,message:message.registrationFailed}); 
                     console.log(userValue)
-                    res.status(httpCodes.ok).json({message:message.successRegister,accessToken:req.accessToken,status:httpCodes.created});
+                    res.status(httpCodes.ok).json({success:true,message:message.successRegister,accessToken:req.accessToken});
                 });
                 }     
         });
@@ -112,16 +112,17 @@ exports.userDetails = function(req,res){
         }
 
         User.find({email:email},queryParts.join(' '),function(err,users){
-                if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
+                if(err) res.status(httpCodes.badRequest).json({success:false,message:message.loginFail});
 
                 if(users.length > 0){
                     res.status(httpCodes.ok).json({
+                            success:true,
                             message:message.successUserList,
-                            data:users,status:httpCodes.ok
+                            data:users
                     });
                 }
                 else {
-                    return res.status(httpCodes.noContent).send({message:message.noUsersFound,status:httpCodes.ok});
+                    return res.status(httpCodes.noContent).send({success:true,message:message.noUsersFound});
                 } 
         });
 } 
@@ -140,16 +141,17 @@ exports.users = function(req,res){
     };
     User.find({},userExclusion,function(err,users){
 
-          if(err) res.json({message:message.loginFail,status:httpCodes.badRequest});
+          if(err) res.json({success:false,message:message.loginFail});
 
         if(users.length > 0){
              res.status(httpCodes.ok).json({
+                       success:true,
                        message:message.successUserList,
-                       data:users,status:httpCodes.ok
+                       data:users
              });
          }
         else {
-            return res.status(httpCodes.noContent).send({message:message.noUsersFound,status:httpCodes.ok});
+            return res.status(httpCodes.noContent).send({success:true,message:message.noUsersFound});
         } 
 
            
@@ -165,11 +167,11 @@ exports.forgotPassword = function(req,res){
     var email = req.body.email;
 
      if(!validator.isEmail(email) || validator.isEmpty(email)){
-        res.status(httpCodes.badRequest).json({message:message.invalidEmail,status:httpCodes.badRequest});
+        res.status(httpCodes.badRequest).json({success:false,message:message.invalidEmail});
      }
 
       User.find({email:email},function(err,users){
-        if(err) res.json({message:message.networkErr,status:httpCodes.networkConnectTimeout});
+        if(err) res.status(httpCodes.badRequest).json({success:false,message:message.networkErr});
         var user = users[0];
         if(users.length > 0){
             var config = {
