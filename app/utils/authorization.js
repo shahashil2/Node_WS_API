@@ -1,6 +1,6 @@
+require('dotenv').config() // get our config file
 var express = require('express');
 const jwt   = require('jsonwebtoken');
-const config = require('../config/config');
 
 exports.checkAuth = function(req,res,next){
 
@@ -8,7 +8,7 @@ exports.checkAuth = function(req,res,next){
     //decode token
     if(token){
         // verifies secret
-        jwt.verify(token,config.secret,function(err,decode){
+        jwt.verify(token,process.env.SECRET_TOKEN,function(err,decode){
             if(err){
                 res.json({success:false,message:'Invalid Token'});
             }else{
@@ -23,7 +23,7 @@ exports.checkAuth = function(req,res,next){
 }
 
 exports.generataToken = function(req,res,next){
-        const jwtToken = jwt.sign('user', config.secret, {
+        const jwtToken = jwt.sign('user', process.env.SECRET_TOKEN, {
                 // expiresIn: 1440// expires in 24 hours
         });
 

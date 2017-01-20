@@ -1,13 +1,12 @@
 //-----------------------------------------
     //get the packages
 //-----------------------------------------
-require('dotenv').config()
+require('dotenv').config() // get our config file
 const express     = require('express');
 const app         = express();
 const bodyParser  = require('body-parser');
 const mongoose    = require('mongoose'); //interact with our MongoDB database
-const jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
-const config      = require('./app/config/config'); // get our config file
+const jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens 
 const User        = require('./app/models/user'); // get our mongoose model
 
 //-----------------------------------------
