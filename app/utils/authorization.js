@@ -1,6 +1,7 @@
 require('dotenv').config()
 var express = require('express');
 const jwt   = require('jsonwebtoken');
+const httpCodes = require('../utils/httpCodes')
 
 exports.checkAuth = function(req,res,next){
 
@@ -18,7 +19,7 @@ exports.checkAuth = function(req,res,next){
         });
 
     }else{
-        res.status(403).json({success:false,message:'No token provided'}); //403:Forbidden and user is not authorize to view any data
+        res.status(httpCodes.forbidden).json({success:false,message:'No token provided'}); //403:Forbidden and user is not authorize to view any data
     }
 }
 
@@ -26,8 +27,6 @@ exports.generataToken = function(req,res,next){
         const jwtToken = jwt.sign('user', process.env.SECRET_TOKEN, {
                 // expiresIn: 1440// expires in 24 hours
         });
-
-        console.log(jwtToken);
         req.accessToken = jwtToken;
         next();
 }

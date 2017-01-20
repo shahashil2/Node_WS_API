@@ -28,5 +28,6 @@ db.once('open',function(){
     console.log('Database connection');
 });
 
-app.listen(port);
 console.log('Magic happens at http://localhost:' + port);
+app.listen(port);
+

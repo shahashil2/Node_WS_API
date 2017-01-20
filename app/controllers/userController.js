@@ -66,7 +66,7 @@ exports.userRegister = function(req,res){
                 if(err) res.status(httpCodes.badRequest).json({success:false,message:message.networkErr});
 
                 if(users.length > 0){
-                    res.status(badRequest).json({success:false,messgae:message.alreadyRegisterUser});
+                        res.status(httpCodes.badRequest).json({success:false,messgae:message.alreadyRegisterUser});
                 }else{
                     var userData = new User({
                     name : name,
@@ -77,8 +77,7 @@ exports.userRegister = function(req,res){
                 //save data into database
                 userData.save(function(err,userValue){
                     if(err) res,status(httpCodes.badRequest).json({success:false,message:message.registrationFailed}); 
-                    console.log(userValue)
-                    res.status(httpCodes.ok).json({success:true,message:message.successRegister,accessToken:req.accessToken});
+                     res.status(httpCodes.ok).json({success:true,message:message.successRegister,accessToken:req.accessToken});
                 });
                 }     
         });

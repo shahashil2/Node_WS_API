@@ -12,5 +12,4 @@ router.route('/user/login').post(auth.generataToken,userCtrl.login);
 router.route('/user/signUp').post(auth.generataToken,userCtrl.userRegister);
 router.route('/user/forgotPassword').post(auth.generataToken,userCtrl.forgotPassword);
 
-
 module.exports = router;
